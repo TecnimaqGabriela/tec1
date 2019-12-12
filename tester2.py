@@ -34,8 +34,8 @@ unknown= 10*np.random.random((test_number,2))
 
 predictions=model.predict(unknown)
 
-for i in range(10):
-    print("For {} the prediction is {}".format(unknown[i], predictions[i]))
+#for i in range(10):
+#    print("For {} the prediction is {}".format(unknown[i], predictions[i]))
 
 for i in range(test_number):
     if predictions[i] > 0.6:

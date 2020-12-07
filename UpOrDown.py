@@ -40,14 +40,17 @@ timeseries_data = timeseries_data/10
 
 import tensorflow as tf
 
-i = tf.keras.layers.Input(shape = (T,))
-x = tf.keras.layers.Dense(1, activation = "sigmoid")(i)
+i = tf.keras.layers.Input(shape = (T,1))
+x = tf.keras.layers.SimpleRNN(5, activation = "relu")(i)
+x = tf.keras.layers.Dense(1, activation = "sigmoid")(x)
 model = tf.keras.models.Model(i, x)
 model.compile(optimizer = tf.keras.optimizers.Adam(lr = 0.1), loss = "binary_crossentropy", metrics = ["accuracy"])
-r = model.fit(timeseries_data, labels, epochs = 50)
+r = model.fit(np.expand_dims(timeseries_data, axis = 2), labels, epochs = 50)
 
 plt.plot(r.history["loss"])
 plt.show()
+
+scores = model.evaluate(np.expand_dims(timeseries_data, axis = 2), labels)
 
 last_x = timeseries_data[-1]
 z = last_x[-1]
@@ -75,7 +78,6 @@ for t in range(horizont - T):
     x_obj = test_data[t:t+T]
     test_timeseries.append(x_obj)
 test_timeseries = np.array(test_timeseries)
-print(test_timeseries)
 test_timeseries = test_timeseries/10
 
 predictions = []
@@ -87,3 +89,5 @@ for i in range(len(test_timeseries)):
         print("prediction: Down(", pred,")")
     else:
         print("prediction: Up(",pred,")")
+
+print("Training accuracy: {}%".format(int(scores[1]*100)))
